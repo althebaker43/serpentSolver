@@ -4,7 +4,7 @@ CXXFLAGS = -g -Wall -Werror
 MODULES = Block Serpent Main
 OBJS = $(MODULES:%=%.o)
 DEPENDS = $(MODULES:%=%.d)
-PROG = serpentCube
+PROG = serpentSolver
 
 RESIDUE = $(OBJS) $(DEPENDS) $(PROG)
 
