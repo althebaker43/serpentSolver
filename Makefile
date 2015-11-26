@@ -1,5 +1,6 @@
 
-CXXFLAGS = -g -Wall -Werror
+CXXFLAGS = -g -Wall -Werror -I/usr/include/libxml2
+LDFLAGS = -lxml2
 
 MODULES = Block Serpent Main
 OBJS = $(MODULES:%=%.o)
