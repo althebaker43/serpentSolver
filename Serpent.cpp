@@ -1,6 +1,6 @@
 
 #include "Serpent.h"
-#include <iostream>
+#include "Block.h"
 #include <fstream>
 
 
@@ -19,9 +19,8 @@ Serpent::CreateFromPath(
 {
     std::ifstream pathStream(filename);
     std::string curLine;
-    ssize_t posX = 1;
-    ssize_t posY = 1;
-    ssize_t posZ = 1;
+    Serpent* serpent = new Serpent();
+    Block* curBlock = serpent->getHead();
 
     while (pathStream.good() == true)
     {
@@ -34,23 +33,65 @@ Serpent::CreateFromPath(
 
         switch (curLine[0])
         {
-            case 'u': ++posZ; break;
-            case 'd': --posZ; break;
-            case 'f': ++posX; break;
-            case 'b': --posX; break;
-            case 'r': ++posY; break;
-            case 'l': --posY; break;
+            case 'u': curBlock = curBlock->addNext(Block::DIR_UP); break;
+            case 'd': curBlock = curBlock->addNext(Block::DIR_DOWN); break;
+            case 'f': curBlock = curBlock->addNext(Block::DIR_FORWARD); break;
+            case 'b': curBlock = curBlock->addNext(Block::DIR_BACKWARD); break;
+            case 'r': curBlock = curBlock->addNext(Block::DIR_RIGHT); break;
+            case 'l': curBlock = curBlock->addNext(Block::DIR_LEFT); break;
             default: break;
         };
     }
 
     pathStream.close();
 
-    std::cout
-        << "X:" << posX << ' '
-        << "Y:" << posY << ' '
-        << "Z:" << posZ << ' '
-        << std::endl;
-
-    return NULL;
+    return serpent;
 }
+
+
+Serpent::Serpent() :
+    myHead(new Block())
+{
+}
+
+Serpent::~Serpent()
+{
+    delete myHead;
+}
+
+Block*
+Serpent::getHead() const
+{
+    return myHead;
+}
+
+void
+Serpent::getTailPos(
+        ssize_t& xPos,
+        ssize_t& yPos,
+        ssize_t& zPos
+        ) const
+{
+    Block* curBlock = getHead();
+    xPos = 1;
+    yPos = 1;
+    zPos = 1;
+
+    while (curBlock != NULL)
+    {
+        Block::Direction nextDir;
+        curBlock = curBlock->getNext(nextDir);
+
+        switch (nextDir)
+        {
+            case Block::DIR_UP: ++zPos; break;
+            case Block::DIR_DOWN: --zPos; break;
+            case Block::DIR_FORWARD: ++xPos; break;
+            case Block::DIR_BACKWARD: --xPos; break;
+            case Block::DIR_RIGHT: --yPos; break;
+            case Block::DIR_LEFT: ++yPos; break;
+            default: break;
+        };
+    }
+}
+

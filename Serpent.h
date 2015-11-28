@@ -2,6 +2,9 @@
 #define SERPENT_H
 
 #include <ios>
+#include <stdlib.h>
+
+class Block;
 
 class Serpent
 {
@@ -15,9 +18,21 @@ class Serpent
                 const char* filename
                 );
 
-        void writeXML(
-                std::ostream& outputStream
-                );
+        ~Serpent();
+
+        Block* getHead() const;
+
+        void getTailPos(
+                ssize_t& xPos,
+                ssize_t& yPos,
+                ssize_t& zPos
+                ) const;
+
+    private:
+
+        Serpent();
+
+        Block* myHead;
 };
 
 #endif
