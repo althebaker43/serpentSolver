@@ -77,10 +77,14 @@ Serpent::getTailPos(
     yPos = 1;
     zPos = 1;
 
-    while (curBlock != NULL)
+    while (true)
     {
         Block::Direction nextDir;
         curBlock = curBlock->getNext(nextDir);
+        if (curBlock == NULL)
+        {
+            break;
+        }
 
         switch (nextDir)
         {
