@@ -46,6 +46,12 @@ Block::getNext(
     return myNext;
 }
 
+Block*
+Block::getNext() const
+{
+    return myNext;
+}
+
 void
 Block::rotate(
         Rotation rot

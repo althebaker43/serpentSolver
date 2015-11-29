@@ -39,6 +39,8 @@ class Block
                 Direction& dir
                 ) const;
 
+        Block* getNext() const;
+
         void rotate(
                 Rotation rot
                 );

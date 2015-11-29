@@ -17,25 +17,24 @@ main(
 
     Serpent* serpent = Serpent::CreateFromPath(argv[1]);
 
-    ssize_t posX = 1;
-    ssize_t posY = 1;
-    ssize_t posZ = 1;
-    serpent->getTailPos(posX, posY, posZ);
+    size_t sizeX = 0;
+    size_t sizeY = 0;
+    size_t sizeZ = 0;
+    serpent->getDimensions(sizeX, sizeY, sizeZ);
     std::cout
-        << "X:" << posX << ' '
-        << "Y:" << posY << ' '
-        << "Z:" << posZ << ' '
+        << "X:" << sizeX << ' '
+        << "Y:" << sizeY << ' '
+        << "Z:" << sizeZ << ' '
         << std::endl;
 
-    std::cout << "Rotating head one Z_CW" << std::endl;
-    serpent->getHead()->rotate(Block::ROT_Z_CW);
-
-    serpent->getTailPos(posX, posY, posZ);
-    std::cout
-        << "X:" << posX << ' '
-        << "Y:" << posY << ' '
-        << "Z:" << posZ << ' '
-        << std::endl;
+    if (serpent->check() == true)
+    {
+        std::cout << "Check passed." << std::endl;
+    }
+    else
+    {
+        std::cout << "Check failed." << std::endl;
+    }
 
     delete serpent;
 
