@@ -10,6 +10,12 @@ class Serpent
 {
     public:
 
+        enum Axis{
+            AXIS_X,
+            AXIS_Y,
+            AXIS_Z
+        };
+
         static Serpent* CreateFromXML(
                 const char* filename
                 );
@@ -56,6 +62,15 @@ class Serpent
         Serpent();
 
         size_t getNumBlocks() const;
+
+        void getBounds(
+                ssize_t& xMin,
+                ssize_t& yMin,
+                ssize_t& zMin,
+                ssize_t& xMax,
+                ssize_t& yMax,
+                ssize_t& zMax
+                ) const;
 
         void initializeSpace();
 

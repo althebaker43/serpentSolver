@@ -109,16 +109,48 @@ Serpent::getDimensions(
         size_t& zSize
         ) const
 {
-    Block* curBlock = getHead();
     ssize_t xMin = 0;
     ssize_t yMin = 0;
     ssize_t zMin = 0;
     ssize_t xMax = 0;
     ssize_t yMax = 0;
     ssize_t zMax = 0;
+
+    getBounds(
+            xMin,
+            yMin,
+            zMin,
+            xMax,
+            yMax,
+            zMax
+            );
+
+    xSize = GetLength(xMax, xMin);
+    ySize = GetLength(yMax, yMin);
+    zSize = GetLength(zMax, zMin);
+}
+
+void
+Serpent::getBounds(
+        ssize_t& xMin,
+        ssize_t& yMin,
+        ssize_t& zMin,
+        ssize_t& xMax,
+        ssize_t& yMax,
+        ssize_t& zMax
+        ) const
+{
+    Block* curBlock = getHead();
     ssize_t xPos = 1;
     ssize_t yPos = 1;
     ssize_t zPos = 1;
+
+    xMin = 0;
+    yMin = 0;
+    zMin = 0;
+    xMax = 0;
+    yMax = 0;
+    zMax = 0;
 
     while (true)
     {
@@ -140,10 +172,6 @@ Serpent::getDimensions(
             default: break;
         };
     }
-
-    xSize = GetLength(xMax, xMin);
-    ySize = GetLength(yMax, yMin);
-    zSize = GetLength(zMax, zMin);
 }
 
 ssize_t
