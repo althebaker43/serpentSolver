@@ -2,6 +2,7 @@
 #include "Serpent.h"
 #include "Block.h"
 #include <fstream>
+#include <algorithm>
 
 
 Serpent*
@@ -396,3 +397,58 @@ Serpent::clearSpace()
         }
     }
 }
+
+static bool
+CompareSizePtrs(
+        size_t* ptr1,
+        size_t* ptr2
+        )
+{
+    return ((*ptr1) > (*ptr2));
+}
+
+void
+Serpent::getMaxSizeAxes(
+        Serpent::Axes&  axes
+        )
+{
+    axes.clear();
+
+    size_t xSize = 0;
+    size_t ySize = 0;
+    size_t zSize = 0;
+
+    getDimensions(xSize, ySize, zSize);
+
+    std::vector<size_t*> sizes(3);
+    sizes[0] = &xSize;
+    sizes[1] = &ySize;
+    sizes[2] = &zSize;
+
+    std::sort(
+            sizes.begin(),
+            sizes.end(),
+            CompareSizePtrs
+            );
+
+    for(
+            size_t sizeIdx = 0;
+            sizeIdx < 3;
+            ++sizeIdx
+       )
+    {
+        if (sizes[sizeIdx] == &xSize)
+        {
+            axes.push_back(AXIS_X);
+        }
+        else if (sizes[sizeIdx] == &ySize)
+        {
+            axes.push_back(AXIS_Y);
+        }
+        else
+        {
+            axes.push_back(AXIS_Z);
+        }
+    }
+}
+

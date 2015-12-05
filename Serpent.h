@@ -3,6 +3,7 @@
 
 #include <ios>
 #include <stdlib.h>
+#include <vector>
 
 class Block;
 
@@ -15,6 +16,8 @@ class Serpent
             AXIS_Y,
             AXIS_Z
         };
+
+        typedef std::vector<Axis> Axes;
 
         static Serpent* CreateFromXML(
                 const char* filename
@@ -90,6 +93,10 @@ class Serpent
                 );
 
         void clearSpace();
+
+        void getMaxSizeAxes(
+                Axes& axes  /**< Set of axes sorted by maximum size */
+                );
 
         Block* myHead;
 
