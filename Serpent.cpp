@@ -1,6 +1,7 @@
 
 #include "Serpent.h"
 #include "Block.h"
+#include "Space.h"
 #include <fstream>
 #include <algorithm>
 
@@ -44,15 +45,14 @@ Serpent::CreateFromPath(
 
 Serpent::Serpent() :
     myHead(new Block()),
-    mySpace(NULL),
-    mySpaceRadius(0)
+    mySpace(NULL)
 {
 }
 
 Serpent::~Serpent()
 {
     delete myHead;
-    deleteSpace();
+    delete mySpace;
 }
 
 Block*
@@ -333,11 +333,11 @@ Serpent::check()
 {
     if (mySpace == NULL)
     {
-        initializeSpace();
+        mySpace = new Space(getNumBlocks());
     }
     else
     {
-        clearSpace();
+        mySpace->clear();
     }
 
     Block* curBlock = getHead();
@@ -354,12 +354,12 @@ Serpent::check()
             break;
         }
 
-        if (getSpace(xPos, yPos, zPos) != 0)
+        if (mySpace->get(xPos, yPos, zPos) != 0)
         {
             return false;
         }
 
-        setSpace(xPos, yPos, zPos, 1);
+        mySpace->set(xPos, yPos, zPos, 1);
 
         switch (nextDir)
         {
@@ -374,70 +374,6 @@ Serpent::check()
     }
 
     return true;
-}
-
-void
-Serpent::initializeSpace()
-{
-    mySpaceRadius = getNumBlocks();
-    size_t spaceSize = 2 * mySpaceRadius;
-
-    mySpace = new size_t** [spaceSize];
-
-    for(
-            size_t xPos = 0;
-            xPos < spaceSize;
-            ++xPos
-       )
-    {
-        mySpace[xPos] = new size_t* [spaceSize];
-
-        for(
-                size_t yPos = 0;
-                yPos < spaceSize;
-                ++yPos
-           )
-        {
-            mySpace[xPos][yPos] = new size_t [spaceSize];
-
-            for(
-                    size_t zPos = 0;
-                    zPos < spaceSize;
-                    ++zPos
-               )
-            {
-                mySpace[xPos][yPos][zPos] = 0;
-            }
-        }
-    }
-}
-
-void
-Serpent::deleteSpace()
-{
-    size_t spaceSize = 2 * mySpaceRadius;
-
-    for(
-            size_t xPos = 0;
-            xPos < spaceSize;
-            ++xPos
-       )
-    {
-        for(
-                size_t yPos = 0;
-                yPos < spaceSize;
-                ++yPos
-           )
-        {
-            delete [] mySpace[xPos][yPos];
-        }
-
-        delete [] mySpace[xPos];
-    }
-
-    delete [] mySpace;
-
-    mySpaceRadius = 0;
 }
 
 size_t
@@ -455,64 +391,6 @@ Serpent::getNumBlocks() const
     }
 
     return numBlocks;
-}
-
-size_t
-Serpent::getSpace(
-        ssize_t xPos,
-        ssize_t yPos,
-        ssize_t zPos
-        ) const
-{
-    size_t xIdx = xPos + mySpaceRadius;
-    size_t yIdx = yPos + mySpaceRadius;
-    size_t zIdx = zPos + mySpaceRadius;
-
-    return mySpace[xIdx][yIdx][zIdx];
-}
-
-void
-Serpent::setSpace(
-        ssize_t xPos,
-        ssize_t yPos,
-        ssize_t zPos,
-        size_t val
-        )
-{
-    size_t xIdx = xPos + mySpaceRadius;
-    size_t yIdx = yPos + mySpaceRadius;
-    size_t zIdx = zPos + mySpaceRadius;
-
-    mySpace[xIdx][yIdx][zIdx] = val;
-}
-
-void
-Serpent::clearSpace()
-{
-    size_t spaceSize = 2 * mySpaceRadius;
-
-    for(
-            size_t xPos = 0;
-            xPos < spaceSize;
-            ++xPos
-       )
-    {
-        for(
-                size_t yPos = 0;
-                yPos < spaceSize;
-                ++yPos
-           )
-        {
-            for(
-                    size_t zPos = 0;
-                    zPos < spaceSize;
-                    ++zPos
-               )
-            {
-                mySpace[xPos][yPos][zPos] = 0;
-            }
-        }
-    }
 }
 
 static bool

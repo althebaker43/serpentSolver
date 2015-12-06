@@ -8,6 +8,7 @@
 
 class Block;
 class BlockIterator;
+class Space;
 
 class Serpent
 {
@@ -97,34 +98,13 @@ class Serpent
                 ssize_t& zMax
                 );
 
-        void initializeSpace();
-
-        void deleteSpace();
-
-        size_t getSpace(
-                ssize_t xPos,
-                ssize_t yPos,
-                ssize_t zPos
-                ) const;
-
-        void setSpace(
-                ssize_t xPos,
-                ssize_t yPos,
-                ssize_t zPos,
-                size_t val
-                );
-
-        void clearSpace();
-
         void getMaxSizeAxes(
                 Axes& axes  /**< Set of axes sorted by maximum size */
                 );
 
         Block* myHead;
 
-        size_t*** mySpace;
-
-        size_t mySpaceRadius;
+        Space* mySpace;
 };
 
 #endif

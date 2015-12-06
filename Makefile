@@ -2,7 +2,7 @@
 CXXFLAGS = -g -Wall -Werror
 LDFLAGS =
 
-MODULES = Block Serpent Main
+MODULES = Block Space Serpent Main
 OBJS = $(MODULES:%=%.o)
 DEPENDS = $(MODULES:%=%.d)
 PROG = serpentSolver
