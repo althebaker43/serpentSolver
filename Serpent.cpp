@@ -39,6 +39,8 @@ Serpent::CreateFromPath(
 
     pathStream.close();
 
+    serpent->markTailBlocks();
+
     return serpent;
 }
 
@@ -556,6 +558,11 @@ class Serpent::PivotBlockCollector : public Serpent::PositionIterator
                 return;
             }
 
+            if (block->isTail() == true)
+            {
+                return;
+            }
+
             ssize_t pos = 0;
             switch (myAxis)
             {
@@ -732,5 +739,70 @@ Serpent::compress()
     }
 
     return false;
+}
+
+class Serpent::TailBlockCollector : public Serpent::BlockIterator
+{
+    private:
+
+        Blocks myTailBlocks;
+
+        Direction myPrevDir;
+
+    public:
+
+        TailBlockCollector() :
+            myPrevDir(DIR_UP)
+        {
+        }
+
+        void processHead(
+                Block* head
+                )
+        {
+        }
+
+        void processBlock(
+                Block*      block,
+                Direction   dir
+                )
+        {
+            if (dir == myPrevDir)
+            {
+                myTailBlocks.push_back(block);
+            }
+            else
+            {
+                myTailBlocks.clear();
+            }
+        }
+
+        void getTailBlocks(
+                Blocks& tailBlocks
+                )
+        {
+            tailBlocks = myTailBlocks;
+        }
+};
+
+void
+Serpent::markTailBlocks()
+{
+    Blocks tailBlocks;
+
+    TailBlockCollector collector;
+    iterateOverBlocks(&collector);
+    collector.getTailBlocks(tailBlocks);
+
+    for(
+            Blocks::const_iterator blockIter = tailBlocks.begin();
+            blockIter != tailBlocks.end();
+            ++blockIter
+       )
+    {
+        Block* block = *blockIter;
+
+        block->setTail(true);
+    }
 }
 

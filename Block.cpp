@@ -14,7 +14,8 @@ Direction Block::OUR_ROT_DIR_MAP[Block::NUM_ROTS][NUM_DIRS] = {
 
 Block::Block() :
     myNext(NULL),
-    myNextDir(DIR_UP)
+    myNextDir(DIR_UP),
+    myIsTail(false)
 {
 }
 
@@ -63,5 +64,19 @@ Block::rotate(
     {
         myNext->rotate(rot);
     }
+}
+
+void
+Block::setTail(
+        bool isTail
+        )
+{
+    myIsTail = isTail;
+}
+
+bool
+Block::isTail() const
+{
+    return myIsTail;
 }
 

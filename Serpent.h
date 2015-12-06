@@ -69,6 +69,7 @@ class Serpent
         class BoundsCalculator;
         class Checker;
         class PivotBlockCollector;
+        class TailBlockCollector;
 
         typedef std::vector<Block*> Blocks;
 
@@ -112,6 +113,8 @@ class Serpent
                 Axis    axis,   /**< Axis to look for center on */
                 Blocks& blocks  /**< Pivot points sorted by distance from center */
                 );
+
+        void markTailBlocks();
 
         Block* myHead;
 

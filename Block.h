@@ -32,6 +32,12 @@ class Block
 
         Block* getNext() const;
 
+        void setTail(
+                bool isTail
+                );
+
+        bool isTail() const;
+
         void rotate(
                 Rotation rot
                 );
@@ -43,6 +49,8 @@ class Block
         Block* myNext;
 
         Direction myNextDir;
+
+        bool myIsTail;
 };
 
 #endif
