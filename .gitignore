@@ -1,6 +1,7 @@
 *.swp
 *.o
 *.d
+*.patch
 *#
 rotations.ods
 serpentSolver
