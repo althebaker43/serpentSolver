@@ -629,3 +629,77 @@ Serpent::getPivots(
     collector.getPivots(blocks);
 }
 
+bool
+Serpent::compress()
+{
+    Axes axes;
+    getMaxSizeAxes(axes);
+
+    for(
+            Axes::const_iterator axisIter = axes.begin();
+            axisIter != axes.end();
+            ++axisIter
+       )
+    {
+        Axis axis = *axisIter;
+
+        Blocks pivots;
+        getPivots(axis, pivots);
+
+        for(
+                Blocks::const_iterator pivotIter = pivots.begin();
+                pivotIter != pivots.end();
+                ++pivotIter
+           )
+        {
+            Block* pivot = *pivotIter;
+
+            Block::Rotation cwRot;
+            Block::Rotation ccwRot;
+
+            switch (axis)
+            {
+                case AXIS_X:
+                    cwRot = Block::ROT_X_CW;
+                    ccwRot = Block::ROT_X_CCW;
+                    break;
+
+                case AXIS_Y:
+                    cwRot = Block::ROT_Y_CW;
+                    ccwRot = Block::ROT_Y_CCW;
+                    break;
+
+                case AXIS_Z:
+                    cwRot = Block::ROT_Z_CW;
+                    ccwRot = Block::ROT_Z_CCW;
+                    break;
+
+                default:
+                    break;
+            };
+
+            pivot->rotate(cwRot);
+            if (check() == true)
+            {
+                return true;
+            }
+            else
+            {
+                pivot->rotate(ccwRot);
+            }
+
+            pivot->rotate(ccwRot);
+            if (check() == true)
+            {
+                return true;
+            }
+            else
+            {
+                pivot->rotate(cwRot);
+            }
+        }
+    }
+
+    return false;
+}
+

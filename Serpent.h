@@ -44,6 +44,8 @@ class Serpent
 
         bool check();
 
+        bool compress();
+
     private:
 
         class BlockIterator
