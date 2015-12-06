@@ -66,6 +66,9 @@ class Serpent
         class TailPosCalculator;
         class BoundsCalculator;
         class Checker;
+        class PivotBlockCollector;
+
+        typedef std::vector<Block*> Blocks;
 
         static ssize_t GetMax(
                 ssize_t val1,
@@ -101,6 +104,11 @@ class Serpent
 
         void getMaxSizeAxes(
                 Axes& axes  /**< Set of axes sorted by maximum size */
+                );
+
+        void getPivots(
+                Axis    axis,   /**< Axis to look for center on */
+                Blocks& blocks  /**< Pivot points sorted by distance from center */
                 );
 
         Block* myHead;

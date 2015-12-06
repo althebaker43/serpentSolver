@@ -461,3 +461,171 @@ Serpent::getMaxSizeAxes(
     }
 }
 
+static float
+getCenter(
+        ssize_t min,
+        ssize_t max
+        )
+{
+    return ((max - min) / 2.0);
+}
+
+class Serpent::PivotBlockCollector : public Serpent::PositionIterator
+{
+    private:
+
+        const Axis myAxis;
+
+        const float myCenter;
+
+        /**
+         * Container of pivots and their distances from the center
+         */
+        std::vector<std::pair<Block*, float> > myPivotsDistances;
+
+        bool isPivot(
+                Direction dir
+                ) const
+        {
+            if(
+                    (myAxis == AXIS_X) &&
+                    (
+                     (dir == DIR_FORWARD) ||
+                     (dir == DIR_BACKWARD)
+                    )
+              )
+            {
+                return true;
+            }
+            else if(
+                    (myAxis == AXIS_Y) &&
+                    (
+                     (dir == DIR_RIGHT) ||
+                     (dir == DIR_LEFT)
+                    )
+                   )
+            {
+                return true;
+            }
+            else if(
+                    (myAxis == AXIS_Z) &&
+                    (
+                     (dir == DIR_UP) ||
+                     (dir == DIR_DOWN)
+                    )
+                   )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        static bool ComparePivotsDistances(
+                const std::pair<Block*, float>& pair1,
+                const std::pair<Block*, float>& pair2
+                )
+        {
+            return ((pair1.second) < (pair2.second));
+        }
+
+    public:
+
+        PivotBlockCollector(
+                Axis    axis,
+                float   center
+                ) :
+            myAxis(axis),
+            myCenter(center)
+        {
+        }
+
+        void processHead(
+                Block* head
+                )
+        {
+        }
+
+        void processPositionBlock(
+                Block*      block,
+                Direction   dir
+                )
+        {
+            if (isPivot(dir) == false)
+            {
+                return;
+            }
+
+            ssize_t pos = 0;
+            switch (myAxis)
+            {
+                case AXIS_X: pos = getXPos(); break;
+                case AXIS_Y: pos = getYPos(); break;
+                case AXIS_Z: pos = getZPos(); break;
+                default: break;
+            }
+
+            float distance = pos - myCenter;
+
+            myPivotsDistances.push_back(
+                    std::pair<Block*, float>(
+                        block,
+                        distance
+                        )
+                    );
+        }
+
+        void getPivots(
+                Blocks& pivots
+                )
+        {
+            pivots.clear();
+
+            std::sort(
+                    myPivotsDistances.begin(),
+                    myPivotsDistances.end(),
+                    ComparePivotsDistances
+                    );
+
+            for(
+                    std::vector<std::pair<Block*, float> >::const_iterator iter = myPivotsDistances.begin();
+                    iter != myPivotsDistances.end();
+                    ++iter
+               )
+            {
+                pivots.push_back(iter->first);
+            }
+        }
+};
+
+void
+Serpent::getPivots(
+        Axis    axis,
+        Blocks& blocks
+        )
+{
+    blocks.clear();
+
+    ssize_t xMin = 0;
+    ssize_t yMin = 0;
+    ssize_t zMin = 0;
+    ssize_t xMax = 0;
+    ssize_t yMax = 0;
+    ssize_t zMax = 0;
+
+    getBounds(xMin, yMin, zMin, xMax, yMax, zMax);
+
+    float center = 0.0;
+    switch (axis)
+    {
+        case AXIS_X: center = getCenter(xMin, xMax); break;
+        case AXIS_Y: center = getCenter(yMin, yMax); break;
+        case AXIS_Z: center = getCenter(zMin, zMax); break;
+        default: break;
+    };
+
+    PivotBlockCollector collector(axis, center);
+    iterateOverBlocks(&collector);
+    collector.getPivots(blocks);
+}
+
