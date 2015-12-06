@@ -1,20 +1,11 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
+#include "Common.h"
+
 class Block
 {
     public:
-
-        enum Direction
-        {
-            DIR_UP,
-            DIR_DOWN,
-            DIR_FORWARD,
-            DIR_BACKWARD,
-            DIR_RIGHT,
-            DIR_LEFT,
-            NUM_DIRS
-        };
 
         enum Rotation
         {

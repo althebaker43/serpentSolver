@@ -34,12 +34,12 @@ Serpent::CreateFromPath(
 
         switch (curLine[0])
         {
-            case 'u': curBlock = curBlock->addNext(Block::DIR_UP); break;
-            case 'd': curBlock = curBlock->addNext(Block::DIR_DOWN); break;
-            case 'f': curBlock = curBlock->addNext(Block::DIR_FORWARD); break;
-            case 'b': curBlock = curBlock->addNext(Block::DIR_BACKWARD); break;
-            case 'r': curBlock = curBlock->addNext(Block::DIR_RIGHT); break;
-            case 'l': curBlock = curBlock->addNext(Block::DIR_LEFT); break;
+            case 'u': curBlock = curBlock->addNext(DIR_UP); break;
+            case 'd': curBlock = curBlock->addNext(DIR_DOWN); break;
+            case 'f': curBlock = curBlock->addNext(DIR_FORWARD); break;
+            case 'b': curBlock = curBlock->addNext(DIR_BACKWARD); break;
+            case 'r': curBlock = curBlock->addNext(DIR_RIGHT); break;
+            case 'l': curBlock = curBlock->addNext(DIR_LEFT); break;
             default: break;
         };
     }
@@ -70,37 +70,91 @@ Serpent::getHead() const
 }
 
 void
-Serpent::getTailPos(
-        ssize_t& xPos,
-        ssize_t& yPos,
-        ssize_t& zPos
-        ) const
+Serpent::iterateOverBlocks(
+        BlockIterator* iter
+        )
 {
     Block* curBlock = getHead();
-    xPos = 1;
-    yPos = 1;
-    zPos = 1;
+
+    iter->processHead(curBlock);
 
     while (true)
     {
-        Block::Direction nextDir;
+        Direction nextDir;
         curBlock = curBlock->getNext(nextDir);
         if (curBlock == NULL)
         {
             break;
         }
 
-        switch (nextDir)
-        {
-            case Block::DIR_UP: ++zPos; break;
-            case Block::DIR_DOWN: --zPos; break;
-            case Block::DIR_FORWARD: ++xPos; break;
-            case Block::DIR_BACKWARD: --xPos; break;
-            case Block::DIR_RIGHT: --yPos; break;
-            case Block::DIR_LEFT: ++yPos; break;
-            default: break;
-        };
+        iter->processBlock(curBlock, nextDir);
     }
+}
+
+class Serpent::TailPosCalculator : public Serpent::BlockIterator
+{
+    private:
+
+        ssize_t myXPos;
+        ssize_t myYPos;
+        ssize_t myZPos;
+
+    public:
+
+        TailPosCalculator() :
+            myXPos(1),
+            myYPos(1),
+            myZPos(1)
+        {
+        }
+
+        void processHead(
+                Block* head
+                )
+        {
+        }
+
+        void processBlock(
+                Block*      block,
+                Direction   dir
+                )
+        {
+            switch (dir)
+            {
+                case DIR_UP: ++myZPos; break;
+                case DIR_DOWN: --myZPos; break;
+                case DIR_FORWARD: ++myXPos; break;
+                case DIR_BACKWARD: --myXPos; break;
+                case DIR_RIGHT: --myYPos; break;
+                case DIR_LEFT: ++myYPos; break;
+                default: break;
+            };
+        }
+
+        void getTailPos(
+                ssize_t&    xPos,
+                ssize_t&    yPos,
+                ssize_t&    zPos
+                ) const
+        {
+            xPos = myXPos;
+            yPos = myYPos;
+            zPos = myZPos;
+        }
+};
+
+void
+Serpent::getTailPos(
+        ssize_t& xPos,
+        ssize_t& yPos,
+        ssize_t& zPos
+        )
+{
+    TailPosCalculator calculator;
+
+    iterateOverBlocks(&calculator);
+
+    calculator.getTailPos(xPos, yPos, zPos);
 }
 
 void
@@ -155,7 +209,7 @@ Serpent::getBounds(
 
     while (true)
     {
-        Block::Direction nextDir;
+        Direction nextDir;
         curBlock = curBlock->getNext(nextDir);
         if (curBlock == NULL)
         {
@@ -164,12 +218,12 @@ Serpent::getBounds(
 
         switch (nextDir)
         {
-            case Block::DIR_UP: zMax = GetMax(zMax, ++zPos); break;
-            case Block::DIR_DOWN: zMin = GetMin(zMin, --zPos); break;
-            case Block::DIR_FORWARD: xMax = GetMax(xMax, ++xPos); break;
-            case Block::DIR_BACKWARD: xMin = GetMin(xMin, --xPos); break;
-            case Block::DIR_RIGHT: yMin = GetMin(yMin, --yPos); break;
-            case Block::DIR_LEFT: yMax = GetMax(yMax, ++yPos); break;
+            case DIR_UP: zMax = GetMax(zMax, ++zPos); break;
+            case DIR_DOWN: zMin = GetMin(zMin, --zPos); break;
+            case DIR_FORWARD: xMax = GetMax(xMax, ++xPos); break;
+            case DIR_BACKWARD: xMin = GetMin(xMin, --xPos); break;
+            case DIR_RIGHT: yMin = GetMin(yMin, --yPos); break;
+            case DIR_LEFT: yMax = GetMax(yMax, ++yPos); break;
             default: break;
         };
     }
@@ -230,7 +284,7 @@ Serpent::check()
 
     while (true)
     {
-        Block::Direction nextDir;
+        Direction nextDir;
         curBlock = curBlock->getNext(nextDir);
         if (curBlock == NULL)
         {
@@ -246,12 +300,12 @@ Serpent::check()
 
         switch (nextDir)
         {
-            case Block::DIR_UP: ++zPos; break;
-            case Block::DIR_DOWN: --zPos; break;
-            case Block::DIR_FORWARD: ++xPos; break;
-            case Block::DIR_BACKWARD: --xPos; break;
-            case Block::DIR_RIGHT: --yPos; break;
-            case Block::DIR_LEFT: ++yPos; break;
+            case DIR_UP: ++zPos; break;
+            case DIR_DOWN: --zPos; break;
+            case DIR_FORWARD: ++xPos; break;
+            case DIR_BACKWARD: --xPos; break;
+            case DIR_RIGHT: --yPos; break;
+            case DIR_LEFT: ++yPos; break;
             default: break;
         };
     }

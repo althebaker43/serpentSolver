@@ -1,11 +1,13 @@
 #ifndef SERPENT_H
 #define SERPENT_H
 
+#include "Common.h"
 #include <ios>
 #include <stdlib.h>
 #include <vector>
 
 class Block;
+class BlockIterator;
 
 class Serpent
 {
@@ -35,7 +37,7 @@ class Serpent
                 ssize_t& xPos,
                 ssize_t& yPos,
                 ssize_t& zPos
-                ) const;
+                );
 
         void getDimensions(
                 size_t& xSize,
@@ -46,6 +48,24 @@ class Serpent
         bool check();
 
     private:
+
+        class BlockIterator
+        {
+            public:
+
+                virtual ~BlockIterator(){}
+
+                virtual void processHead(
+                        Block* head
+                        ) = 0;
+
+                virtual void processBlock(
+                        Block*      block,
+                        Direction   dir     /**< Direction traveled to get to block */
+                        ) = 0;
+        };
+
+        class TailPosCalculator;
 
         static ssize_t GetMax(
                 ssize_t val1,
@@ -63,6 +83,10 @@ class Serpent
                 );
 
         Serpent();
+
+        void iterateOverBlocks(
+                BlockIterator* iter
+                );
 
         size_t getNumBlocks() const;
 

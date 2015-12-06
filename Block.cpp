@@ -3,13 +3,13 @@
 #include <stdlib.h>
 
 
-Block::Direction Block::OUR_ROT_DIR_MAP[Block::NUM_ROTS][Block::NUM_DIRS] = {
-    { Block::DIR_RIGHT,    Block::DIR_LEFT,     Block::DIR_FORWARD, Block::DIR_BACKWARD, Block::DIR_DOWN,     Block::DIR_UP       },
-    { Block::DIR_LEFT,     Block::DIR_RIGHT,    Block::DIR_FORWARD, Block::DIR_BACKWARD, Block::DIR_UP,       Block::DIR_DOWN     },
-    { Block::DIR_FORWARD,  Block::DIR_BACKWARD, Block::DIR_DOWN,    Block::DIR_UP,       Block::DIR_RIGHT,    Block::DIR_LEFT     },
-    { Block::DIR_BACKWARD, Block::DIR_FORWARD,  Block::DIR_UP,      Block::DIR_DOWN,     Block::DIR_RIGHT,    Block::DIR_LEFT     },
-    { Block::DIR_UP,       Block::DIR_DOWN,     Block::DIR_LEFT,    Block::DIR_RIGHT,    Block::DIR_FORWARD,  Block::DIR_BACKWARD },
-    { Block::DIR_UP,       Block::DIR_DOWN,     Block::DIR_RIGHT,   Block::DIR_LEFT,     Block::DIR_BACKWARD, Block::DIR_FORWARD  }
+Direction Block::OUR_ROT_DIR_MAP[Block::NUM_ROTS][NUM_DIRS] = {
+    { DIR_RIGHT,    DIR_LEFT,     DIR_FORWARD, DIR_BACKWARD, DIR_DOWN,     DIR_UP       },
+    { DIR_LEFT,     DIR_RIGHT,    DIR_FORWARD, DIR_BACKWARD, DIR_UP,       DIR_DOWN     },
+    { DIR_FORWARD,  DIR_BACKWARD, DIR_DOWN,    DIR_UP,       DIR_RIGHT,    DIR_LEFT     },
+    { DIR_BACKWARD, DIR_FORWARD,  DIR_UP,      DIR_DOWN,     DIR_RIGHT,    DIR_LEFT     },
+    { DIR_UP,       DIR_DOWN,     DIR_LEFT,    DIR_RIGHT,    DIR_FORWARD,  DIR_BACKWARD },
+    { DIR_UP,       DIR_DOWN,     DIR_RIGHT,   DIR_LEFT,     DIR_BACKWARD, DIR_FORWARD  }
 };
 
 Block::Block() :
@@ -25,7 +25,7 @@ Block::~Block()
 
 Block*
 Block::addNext(
-        Block::Direction dir
+        Direction dir
         )
 {
     if (myNext == NULL)
@@ -39,7 +39,7 @@ Block::addNext(
 
 Block*
 Block::getNext(
-        Block::Direction& dir
+        Direction& dir
         ) const
 {
     dir = myNextDir;
