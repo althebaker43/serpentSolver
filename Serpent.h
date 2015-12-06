@@ -65,6 +65,7 @@ class Serpent
         class PositionIterator;
         class TailPosCalculator;
         class BoundsCalculator;
+        class Checker;
 
         static ssize_t GetMax(
                 ssize_t val1,

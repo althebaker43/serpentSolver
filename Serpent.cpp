@@ -328,6 +328,50 @@ Serpent::GetLength(
     }
 }
 
+class Serpent::Checker : public Serpent::PositionIterator
+{
+    private:
+
+        Space* mySpace;
+
+        bool myIsValid;
+
+    public:
+
+        Checker(
+                Space* space
+               ) :
+            mySpace(space),
+            myIsValid(true)
+        {
+        }
+
+        void processHead(
+                Block* head
+                )
+        {
+            mySpace->set(getXPos(), getYPos(), getZPos(), 1);
+        }
+
+        void processPositionBlock(
+                Block*      block,
+                Direction   dir
+                )
+        {
+            if (mySpace->get(getXPos(), getYPos(), getZPos()) != 0)
+            {
+                myIsValid = false;
+            }
+
+            mySpace->set(getXPos(), getYPos(), getZPos(), 1);
+        }
+
+        bool isValid() const
+        {
+            return myIsValid;
+        }
+};
+
 bool
 Serpent::check()
 {
@@ -340,40 +384,10 @@ Serpent::check()
         mySpace->clear();
     }
 
-    Block* curBlock = getHead();
-    ssize_t xPos = 1;
-    ssize_t yPos = 1;
-    ssize_t zPos = 1;
+    Checker checker(mySpace);
+    iterateOverBlocks(&checker);
 
-    while (true)
-    {
-        Direction nextDir;
-        curBlock = curBlock->getNext(nextDir);
-        if (curBlock == NULL)
-        {
-            break;
-        }
-
-        if (mySpace->get(xPos, yPos, zPos) != 0)
-        {
-            return false;
-        }
-
-        mySpace->set(xPos, yPos, zPos, 1);
-
-        switch (nextDir)
-        {
-            case DIR_UP: ++zPos; break;
-            case DIR_DOWN: --zPos; break;
-            case DIR_FORWARD: ++xPos; break;
-            case DIR_BACKWARD: --xPos; break;
-            case DIR_RIGHT: --yPos; break;
-            case DIR_LEFT: ++yPos; break;
-            default: break;
-        };
-    }
-
-    return true;
+    return checker.isValid();
 }
 
 size_t
