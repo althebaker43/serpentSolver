@@ -21,10 +21,6 @@ class Serpent
 
         typedef std::vector<Axis> Axes;
 
-        static Serpent* CreateFromXML(
-                const char* filename
-                );
-
         static Serpent* CreateFromPath(
                 const char* filename
                 );

@@ -6,14 +6,6 @@
 
 
 Serpent*
-Serpent::CreateFromXML(
-        const char* filename
-        )
-{
-    return NULL;
-}
-
-Serpent*
 Serpent::CreateFromPath(
         const char* filename
         )
