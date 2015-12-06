@@ -2,6 +2,7 @@
 *.o
 *.d
 *.patch
+*.csv
 *#
 rotations.ods
 serpentSolver
