@@ -65,6 +65,7 @@ class Serpent
                         ) = 0;
         };
 
+        class PositionIterator;
         class TailPosCalculator;
         class BoundsCalculator;
 

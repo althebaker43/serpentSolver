@@ -91,7 +91,7 @@ Serpent::iterateOverBlocks(
     }
 }
 
-class Serpent::TailPosCalculator : public Serpent::BlockIterator
+class Serpent::PositionIterator : public Serpent::BlockIterator
 {
     private:
 
@@ -101,18 +101,14 @@ class Serpent::TailPosCalculator : public Serpent::BlockIterator
 
     public:
 
-        TailPosCalculator() :
+        PositionIterator() :
             myXPos(1),
             myYPos(1),
             myZPos(1)
         {
         }
 
-        void processHead(
-                Block* head
-                )
-        {
-        }
+        virtual ~PositionIterator(){}
 
         void processBlock(
                 Block*      block,
@@ -121,14 +117,57 @@ class Serpent::TailPosCalculator : public Serpent::BlockIterator
         {
             switch (dir)
             {
-                case DIR_UP: ++myZPos; break;
-                case DIR_DOWN: --myZPos; break;
-                case DIR_FORWARD: ++myXPos; break;
-                case DIR_BACKWARD: --myXPos; break;
-                case DIR_RIGHT: --myYPos; break;
-                case DIR_LEFT: ++myYPos; break;
+                case DIR_UP:        ++myZPos; break;
+                case DIR_DOWN:      --myZPos; break;
+                case DIR_FORWARD:   ++myXPos; break;
+                case DIR_BACKWARD:  --myXPos; break;
+                case DIR_RIGHT:     --myYPos; break;
+                case DIR_LEFT:      ++myYPos; break;
                 default: break;
             };
+
+            processPositionBlock(block, dir);
+        }
+
+    protected:
+
+        virtual void processPositionBlock(
+                Block*      block,
+                Direction   dir
+                ) = 0;
+
+        ssize_t getXPos() const
+        {
+            return myXPos;
+        }
+
+        ssize_t getYPos() const
+        {
+            return myYPos;
+        }
+
+        ssize_t getZPos() const
+        {
+            return myZPos;
+        }
+};
+
+class Serpent::TailPosCalculator : public Serpent::PositionIterator
+{
+
+    public:
+
+        void processHead(
+                Block* head
+                )
+        {
+        }
+
+        void processPositionBlock(
+                Block*      block,
+                Direction   dir
+                )
+        {
         }
 
         void getTailPos(
@@ -137,9 +176,9 @@ class Serpent::TailPosCalculator : public Serpent::BlockIterator
                 ssize_t&    zPos
                 ) const
         {
-            xPos = myXPos;
-            yPos = myYPos;
-            zPos = myZPos;
+            xPos = getXPos();
+            yPos = getYPos();
+            zPos = getZPos();
         }
 };
 
@@ -183,13 +222,9 @@ Serpent::getDimensions(
     zSize = GetLength(zMax, zMin);
 }
 
-class Serpent::BoundsCalculator : public Serpent::BlockIterator
+class Serpent::BoundsCalculator : public Serpent::PositionIterator
 {
     private:
-
-        ssize_t myXPos;
-        ssize_t myYPos;
-        ssize_t myZPos;
 
         ssize_t myXMin;
         ssize_t myYMin;
@@ -218,9 +253,6 @@ class Serpent::BoundsCalculator : public Serpent::BlockIterator
     public:
 
         BoundsCalculator() :
-            myXPos(1),
-            myYPos(1),
-            myZPos(1),
             myXMin(0),
             myYMin(0),
             myZMin(0),
@@ -236,19 +268,19 @@ class Serpent::BoundsCalculator : public Serpent::BlockIterator
         {
         }
 
-        void processBlock(
+        void processPositionBlock(
                 Block*      block,
                 Direction   dir
                 )
         {
             switch (dir)
             {
-                case DIR_UP:        myZMax = GetMax(myZMax, ++myZPos); break;
-                case DIR_DOWN:      myZMin = GetMin(myZMin, --myZPos); break;
-                case DIR_FORWARD:   myXMax = GetMax(myXMax, ++myXPos); break;
-                case DIR_BACKWARD:  myXMin = GetMin(myXMin, --myXPos); break;
-                case DIR_RIGHT:     myYMin = GetMin(myYMin, --myYPos); break;
-                case DIR_LEFT:      myYMax = GetMax(myYMax, ++myYPos); break;
+                case DIR_UP:        myZMax = GetMax(myZMax, getZPos()); break;
+                case DIR_DOWN:      myZMin = GetMin(myZMin, getZPos()); break;
+                case DIR_FORWARD:   myXMax = GetMax(myXMax, getXPos()); break;
+                case DIR_BACKWARD:  myXMin = GetMin(myXMin, getXPos()); break;
+                case DIR_RIGHT:     myYMin = GetMin(myYMin, getYPos()); break;
+                case DIR_LEFT:      myYMax = GetMax(myYMax, getYPos()); break;
                 default: break;
             };
         }
