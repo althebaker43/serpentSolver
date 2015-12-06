@@ -151,9 +151,7 @@ Serpent::getTailPos(
         )
 {
     TailPosCalculator calculator;
-
     iterateOverBlocks(&calculator);
-
     calculator.getTailPos(xPos, yPos, zPos);
 }
 
@@ -162,7 +160,7 @@ Serpent::getDimensions(
         size_t& xSize,
         size_t& ySize,
         size_t& zSize
-        ) const
+        )
 {
     ssize_t xMin = 0;
     ssize_t yMin = 0;
@@ -185,6 +183,94 @@ Serpent::getDimensions(
     zSize = GetLength(zMax, zMin);
 }
 
+class Serpent::BoundsCalculator : public Serpent::BlockIterator
+{
+    private:
+
+        ssize_t myXPos;
+        ssize_t myYPos;
+        ssize_t myZPos;
+
+        ssize_t myXMin;
+        ssize_t myYMin;
+        ssize_t myZMin;
+
+        ssize_t myXMax;
+        ssize_t myYMax;
+        ssize_t myZMax;
+
+        static ssize_t GetMax(
+                ssize_t val1,
+                ssize_t val2
+                )
+        {
+            return ((val1 > val2) ? val1 : val2);
+        }
+
+        static ssize_t GetMin(
+                ssize_t val1,
+                ssize_t val2
+                )
+        {
+            return ((val1 < val2) ? val1 : val2);
+        }
+
+    public:
+
+        BoundsCalculator() :
+            myXPos(1),
+            myYPos(1),
+            myZPos(1),
+            myXMin(0),
+            myYMin(0),
+            myZMin(0),
+            myXMax(0),
+            myYMax(0),
+            myZMax(0)
+        {
+        }
+
+        void processHead(
+                Block*
+                )
+        {
+        }
+
+        void processBlock(
+                Block*      block,
+                Direction   dir
+                )
+        {
+            switch (dir)
+            {
+                case DIR_UP:        myZMax = GetMax(myZMax, ++myZPos); break;
+                case DIR_DOWN:      myZMin = GetMin(myZMin, --myZPos); break;
+                case DIR_FORWARD:   myXMax = GetMax(myXMax, ++myXPos); break;
+                case DIR_BACKWARD:  myXMin = GetMin(myXMin, --myXPos); break;
+                case DIR_RIGHT:     myYMin = GetMin(myYMin, --myYPos); break;
+                case DIR_LEFT:      myYMax = GetMax(myYMax, ++myYPos); break;
+                default: break;
+            };
+        }
+
+        void getBounds(
+                ssize_t& xMin,
+                ssize_t& yMin,
+                ssize_t& zMin,
+                ssize_t& xMax,
+                ssize_t& yMax,
+                ssize_t& zMax
+                ) const
+        {
+            xMin = myXMin;
+            yMin = myYMin;
+            zMin = myZMin;
+            xMax = myXMax;
+            yMax = myYMax;
+            zMax = myZMax;
+        }
+};
+
 void
 Serpent::getBounds(
         ssize_t& xMin,
@@ -193,58 +279,11 @@ Serpent::getBounds(
         ssize_t& xMax,
         ssize_t& yMax,
         ssize_t& zMax
-        ) const
-{
-    Block* curBlock = getHead();
-    ssize_t xPos = 1;
-    ssize_t yPos = 1;
-    ssize_t zPos = 1;
-
-    xMin = 0;
-    yMin = 0;
-    zMin = 0;
-    xMax = 0;
-    yMax = 0;
-    zMax = 0;
-
-    while (true)
-    {
-        Direction nextDir;
-        curBlock = curBlock->getNext(nextDir);
-        if (curBlock == NULL)
-        {
-            break;
-        }
-
-        switch (nextDir)
-        {
-            case DIR_UP: zMax = GetMax(zMax, ++zPos); break;
-            case DIR_DOWN: zMin = GetMin(zMin, --zPos); break;
-            case DIR_FORWARD: xMax = GetMax(xMax, ++xPos); break;
-            case DIR_BACKWARD: xMin = GetMin(xMin, --xPos); break;
-            case DIR_RIGHT: yMin = GetMin(yMin, --yPos); break;
-            case DIR_LEFT: yMax = GetMax(yMax, ++yPos); break;
-            default: break;
-        };
-    }
-}
-
-ssize_t
-Serpent::GetMax(
-        ssize_t val1,
-        ssize_t val2
         )
 {
-    return ((val1 > val2) ? val1 : val2);
-}
-
-ssize_t
-Serpent::GetMin(
-        ssize_t val1,
-        ssize_t val2
-        )
-{
-    return ((val1 < val2) ? val1 : val2);
+    BoundsCalculator calculator;
+    iterateOverBlocks(&calculator);
+    calculator.getBounds(xMin, yMin, zMin, xMax, yMax, zMax);
 }
 
 size_t

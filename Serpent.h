@@ -43,7 +43,7 @@ class Serpent
                 size_t& xSize,
                 size_t& ySize,
                 size_t& zSize
-                ) const;
+                );
 
         bool check();
 
@@ -66,6 +66,7 @@ class Serpent
         };
 
         class TailPosCalculator;
+        class BoundsCalculator;
 
         static ssize_t GetMax(
                 ssize_t val1,
@@ -97,7 +98,7 @@ class Serpent
                 ssize_t& xMax,
                 ssize_t& yMax,
                 ssize_t& zMax
-                ) const;
+                );
 
         void initializeSpace();
 
