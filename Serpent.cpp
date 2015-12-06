@@ -632,70 +632,101 @@ Serpent::getPivots(
 bool
 Serpent::compress()
 {
-    Axes axes;
-    getMaxSizeAxes(axes);
+    Axes compressAxes;
+    getMaxSizeAxes(compressAxes);
 
     for(
-            Axes::const_iterator axisIter = axes.begin();
-            axisIter != axes.end();
-            ++axisIter
+            Axes::const_iterator compressAxisIter = compressAxes.begin();
+            compressAxisIter != compressAxes.end();
+            ++compressAxisIter
        )
     {
-        Axis axis = *axisIter;
+        Axis compressAxis = *compressAxisIter;
+        Axes rotAxes(2);
 
-        Blocks pivots;
-        getPivots(axis, pivots);
+        switch (compressAxis)
+        {
+            case AXIS_X:
+                rotAxes[0] = AXIS_Y;
+                rotAxes[1] = AXIS_Z;
+                break;
+
+            case AXIS_Y:
+                rotAxes[0] = AXIS_X;
+                rotAxes[1] = AXIS_Z;
+                break;
+
+            case AXIS_Z:
+                rotAxes[0] = AXIS_X;
+                rotAxes[1] = AXIS_Y;
+                break;
+
+            default:
+                break;
+        };
 
         for(
-                Blocks::const_iterator pivotIter = pivots.begin();
-                pivotIter != pivots.end();
-                ++pivotIter
+                Axes::const_iterator rotAxisIter = rotAxes.begin();
+                rotAxisIter != rotAxes.end();
+                ++rotAxisIter
            )
         {
-            Block* pivot = *pivotIter;
+            Axis rotAxis = *rotAxisIter;
 
-            Block::Rotation cwRot;
-            Block::Rotation ccwRot;
+            Blocks pivots;
+            getPivots(rotAxis, pivots);
 
-            switch (axis)
+            for(
+                    Blocks::const_iterator pivotIter = pivots.begin();
+                    pivotIter != pivots.end();
+                    ++pivotIter
+               )
             {
-                case AXIS_X:
-                    cwRot = Block::ROT_X_CW;
-                    ccwRot = Block::ROT_X_CCW;
-                    break;
+                Block* pivot = *pivotIter;
 
-                case AXIS_Y:
-                    cwRot = Block::ROT_Y_CW;
-                    ccwRot = Block::ROT_Y_CCW;
-                    break;
+                Block::Rotation cwRot;
+                Block::Rotation ccwRot;
 
-                case AXIS_Z:
-                    cwRot = Block::ROT_Z_CW;
-                    ccwRot = Block::ROT_Z_CCW;
-                    break;
+                switch (rotAxis)
+                {
+                    case AXIS_X:
+                        cwRot = Block::ROT_X_CW;
+                        ccwRot = Block::ROT_X_CCW;
+                        break;
 
-                default:
-                    break;
-            };
+                    case AXIS_Y:
+                        cwRot = Block::ROT_Y_CW;
+                        ccwRot = Block::ROT_Y_CCW;
+                        break;
 
-            pivot->rotate(cwRot);
-            if (check() == true)
-            {
-                return true;
-            }
-            else
-            {
-                pivot->rotate(ccwRot);
-            }
+                    case AXIS_Z:
+                        cwRot = Block::ROT_Z_CW;
+                        ccwRot = Block::ROT_Z_CCW;
+                        break;
 
-            pivot->rotate(ccwRot);
-            if (check() == true)
-            {
-                return true;
-            }
-            else
-            {
+                    default:
+                        break;
+                };
+
                 pivot->rotate(cwRot);
+                if (check() == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    pivot->rotate(ccwRot);
+                }
+
+                pivot->rotate(ccwRot);
+                if (check() == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    pivot->rotate(cwRot);
+                }
             }
         }
     }
