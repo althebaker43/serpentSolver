@@ -32,7 +32,7 @@ $(PROG) : $(OBJS)
 
 .PHONY : python
 $(PY_LIB) python : $(OBJS) $(SWIG_WRAP_OBJ)
-	$(LD) -shared $^ -o $(PY_LIB)
+	$(CXX) $(CXXFLAGS) -shared $^ -o $(PY_LIB)
 
 $(SWIG_WRAP_OBJ) : $(SWIG_WRAP_SRC)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@ -I/usr/include/python2.7

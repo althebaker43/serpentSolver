@@ -20,7 +20,7 @@ Coordinates::getSize() const
     return myXVals.size();
 }
 
-ssize_t
+int
 Coordinates::getXVal(
         size_t idx
         ) const
@@ -28,7 +28,7 @@ Coordinates::getXVal(
     return myXVals[idx];
 }
 
-ssize_t
+int
 Coordinates::getYVal(
         size_t idx
         ) const
@@ -36,7 +36,7 @@ Coordinates::getYVal(
     return myYVals[idx];
 }
 
-ssize_t
+int
 Coordinates::getZVal(
         size_t idx
         ) const
