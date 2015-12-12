@@ -188,6 +188,59 @@ Serpent::getTailPos(
     calculator.getTailPos(xPos, yPos, zPos);
 }
 
+class Serpent::BlocksPosCalculator : public Serpent::PositionIterator
+{
+    private:
+
+        std::vector<ssize_t> myXPos;
+        std::vector<ssize_t> myYPos;
+        std::vector<ssize_t> myZPos;
+
+    public:
+
+        void processHead(
+                Block* head
+                )
+        {
+            myXPos.push_back(getXPos());
+            myYPos.push_back(getYPos());
+            myZPos.push_back(getZPos());
+        }
+
+        void processPositionBlock(
+                Block*      block,
+                Direction   dir
+                )
+        {
+            myXPos.push_back(getXPos());
+            myYPos.push_back(getYPos());
+            myZPos.push_back(getZPos());
+        }
+
+        void getBlocksPos(
+                std::vector<ssize_t>& xPos,
+                std::vector<ssize_t>& yPos,
+                std::vector<ssize_t>& zPos
+                )
+        {
+            xPos = myXPos;
+            yPos = myYPos;
+            zPos = myZPos;
+        }
+};
+
+void
+Serpent::getBlocksPos(
+        std::vector<ssize_t>& xPos,
+        std::vector<ssize_t>& yPos,
+        std::vector<ssize_t>& zPos
+        )
+{
+    BlocksPosCalculator calculator;
+    iterateOverBlocks(&calculator);
+    calculator.getBlocksPos(xPos, yPos, zPos);
+}
+
 void
 Serpent::getDimensions(
         size_t& xSize,

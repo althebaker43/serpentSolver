@@ -36,6 +36,12 @@ class Serpent
                 ssize_t& zPos
                 );
 
+        void getBlocksPos(
+                std::vector<ssize_t>&   xPos,
+                std::vector<ssize_t>&   yPos,
+                std::vector<ssize_t>&   zPos
+                );
+
         void getDimensions(
                 size_t& xSize,
                 size_t& ySize,
@@ -66,6 +72,7 @@ class Serpent
 
         class PositionIterator;
         class TailPosCalculator;
+        class BlocksPosCalculator;
         class BoundsCalculator;
         class Checker;
         class PivotBlockCollector;

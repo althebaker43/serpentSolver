@@ -10,6 +10,16 @@ static void DumpDimensions(
         Serpent*        serpent
         );
 
+static void DumpCoordinates(
+        std::ostream&   outputStream,
+        Serpent*        serpent
+        );
+
+static void WriteValuesRow(
+        std::ostream&               outputStream,
+        const std::vector<ssize_t>& vals
+        );
+
 static bool IsSerpentCube(
         Serpent*    serpent
         );
@@ -28,6 +38,9 @@ main(
     std::cout << "Reading from " << argv[1] << std::endl;
 
     Serpent* serpent = Serpent::CreateFromPath(argv[1]);
+
+    std::ofstream posStream("coordinates.txt");
+    DumpCoordinates(posStream, serpent);
 
     std::ofstream dimStream("dim.csv");
 
@@ -85,6 +98,52 @@ DumpDimensions(
         << sizeY << ' '
         << sizeZ << ' '
         << std::endl;
+}
+
+void
+DumpCoordinates(
+        std::ostream&   outputStream,
+        Serpent*        serpent
+        )
+{
+    std::vector<ssize_t> xPos;
+    std::vector<ssize_t> yPos;
+    std::vector<ssize_t> zPos;
+
+    serpent->getBlocksPos(xPos, yPos, zPos);
+
+    WriteValuesRow(outputStream, xPos);
+    WriteValuesRow(outputStream, yPos);
+    WriteValuesRow(outputStream, zPos);
+}
+
+void
+WriteValuesRow(
+        std::ostream&               outputStream,
+        const std::vector<ssize_t>& vals
+        )
+{
+    bool firstVal = true;
+
+    for(
+            std::vector<ssize_t>::const_iterator iter = vals.begin();
+            iter != vals.end();
+            ++iter
+       )
+    {
+        if (firstVal == false)
+        {
+            outputStream << ' ';
+        }
+        else
+        {
+            firstVal = false;
+        }
+
+        outputStream << *iter;
+    }
+
+    outputStream << std::endl;
 }
 
 bool
