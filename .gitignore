@@ -4,5 +4,9 @@
 *.patch
 *.csv
 *#
+*.pyc
+*.so
 rotations.ods
 serpentSolver
+Serpent.py
+Serpent_wrap.cxx
