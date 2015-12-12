@@ -27,6 +27,8 @@ class Serpent
                 const char* filename
                 );
 
+        Serpent();
+
         ~Serpent();
 
         Block* getHead() const;
@@ -97,8 +99,6 @@ class Serpent
                 ssize_t hiBound,
                 ssize_t loBound
                 );
-
-        Serpent();
 
         void iterateOverBlocks(
                 BlockIterator* iter
