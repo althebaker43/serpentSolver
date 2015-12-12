@@ -9,6 +9,7 @@
 class Block;
 class BlockIterator;
 class Space;
+class Coordinates;
 
 class Serpent
 {
@@ -41,6 +42,8 @@ class Serpent
                 std::vector<ssize_t>&   yPos,
                 std::vector<ssize_t>&   zPos
                 );
+
+        Coordinates* getBlocksPos();
 
         void getDimensions(
                 size_t& xSize,

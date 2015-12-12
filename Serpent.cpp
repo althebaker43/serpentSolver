@@ -2,6 +2,7 @@
 #include "Serpent.h"
 #include "Block.h"
 #include "Space.h"
+#include "Coordinates.h"
 #include <fstream>
 #include <algorithm>
 
@@ -239,6 +240,34 @@ Serpent::getBlocksPos(
     BlocksPosCalculator calculator;
     iterateOverBlocks(&calculator);
     calculator.getBlocksPos(xPos, yPos, zPos);
+}
+
+Coordinates*
+Serpent::getBlocksPos()
+{
+    std::vector<ssize_t> xVals;
+    std::vector<ssize_t> yVals;
+    std::vector<ssize_t> zVals;
+
+    getBlocksPos(xVals, yVals, zVals);
+
+    size_t size = xVals.size();
+    Coordinates* coordinates = new Coordinates();
+
+    for(
+            size_t idx = 0;
+            idx < size;
+            ++idx
+       )
+    {
+        coordinates->add(
+                xVals[idx],
+                yVals[idx],
+                zVals[idx]
+                );
+    }
+
+    return coordinates;
 }
 
 void
