@@ -3,6 +3,7 @@
 
 #include "Common.h"
 #include <ios>
+#include <fstream>
 #include <stdlib.h>
 #include <vector>
 #include <list>
@@ -61,6 +62,14 @@ class Serpent
         void writeSteps(
                 std::ostream& outputStream
                 ) const;
+
+        void openStepFile(
+                const char* filename
+                );
+
+        bool step();
+
+        void closeStepFile();
 
     private:
 
@@ -153,6 +162,8 @@ class Serpent
         Space* mySpace;
 
         Steps mySteps;
+
+        std::ifstream myStepStream;
 };
 
 #endif

@@ -22,4 +22,7 @@ public:
     Serpent();
     ~Serpent();
     Coordinates* getBlocksPos();
+    void openStepFile(const char* filename);
+    bool step();
+    void closeStepFile();
 };

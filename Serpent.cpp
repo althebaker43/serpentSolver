@@ -3,7 +3,6 @@
 #include "Block.h"
 #include "Space.h"
 #include "Coordinates.h"
-#include <fstream>
 #include <algorithm>
 
 
@@ -54,6 +53,7 @@ Serpent::Serpent() :
 
 Serpent::~Serpent()
 {
+    closeStepFile();
     delete myHead;
     delete mySpace;
 }
@@ -916,5 +916,73 @@ Serpent::writeSteps(
 
         outputStream << std::endl;
     }
+}
+
+void
+Serpent::openStepFile(
+        const char* filename
+        )
+{
+    if (myStepStream.is_open() == false)
+    {
+        myStepStream.open(filename);
+    }
+}
+
+bool
+Serpent::step()
+{
+    if (myStepStream.is_open() == false)
+    {
+        return false;
+    }
+
+    size_t blockID;
+    std::string rotString;
+
+    myStepStream >> blockID;
+    myStepStream >> rotString;
+
+    if (myStepStream.good() == false)
+    {
+        return false;
+    }
+
+    Block* block = getHead();
+    for(
+            ;
+            block != NULL;
+            block = block->getNext()
+       )
+    {
+        blockID--;
+        if (blockID == 0)
+        {
+            break;
+        }
+    }
+    if (block == NULL)
+    {
+        return false;
+    }
+
+    Rotation rot;
+    switch (rotString[0])
+    {
+        case 'x': rot = ((rotString.substr(3) == "cw") ? ROT_X_CW : ROT_X_CCW); break;
+        case 'y': rot = ((rotString.substr(3) == "cw") ? ROT_Y_CW : ROT_Y_CCW); break;
+        case 'z': rot = ((rotString.substr(3) == "cw") ? ROT_Z_CW : ROT_Z_CCW); break;
+        default: return false; break;
+    };
+
+    block->rotate(rot);
+
+    return true;
+}
+
+void
+Serpent::closeStepFile()
+{
+    myStepStream.close();
 }
 
