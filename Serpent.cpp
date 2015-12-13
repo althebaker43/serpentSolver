@@ -654,7 +654,7 @@ class Serpent::PivotBlockCollector : public Serpent::PositionIterator
                 default: break;
             }
 
-            float distance = pos - myCenter;
+            float distance = abs(pos - myCenter);
 
             myPivotsDistances.push_back(
                     std::pair<Block*, float>(
