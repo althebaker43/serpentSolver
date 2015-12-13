@@ -2,21 +2,11 @@
 #define BLOCK_H
 
 #include "Common.h"
+#include <stdlib.h>
 
 class Block
 {
     public:
-
-        enum Rotation
-        {
-            ROT_X_CW,
-            ROT_X_CCW,
-            ROT_Y_CW,
-            ROT_Y_CCW,
-            ROT_Z_CW,
-            ROT_Z_CCW,
-            NUM_ROTS
-        };
 
         Block();
 
@@ -32,6 +22,8 @@ class Block
 
         Block* getNext() const;
 
+        size_t getID() const;
+
         void setTail(
                 bool isTail
                 );
@@ -46,9 +38,13 @@ class Block
 
         static Direction OUR_ROT_DIR_MAP [NUM_ROTS] [NUM_DIRS];
 
+        static size_t ourNextID;
+
         Block* myNext;
 
         Direction myNextDir;
+
+        const size_t MY_ID;
 
         bool myIsTail;
 };

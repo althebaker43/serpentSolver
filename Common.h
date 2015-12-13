@@ -12,4 +12,15 @@ enum Direction
     NUM_DIRS
 };
 
+enum Rotation
+{
+    ROT_X_CW,
+    ROT_X_CCW,
+    ROT_Y_CW,
+    ROT_Y_CCW,
+    ROT_Z_CW,
+    ROT_Z_CCW,
+    NUM_ROTS
+};
+
 #endif

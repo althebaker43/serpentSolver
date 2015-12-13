@@ -5,6 +5,7 @@
 #include <ios>
 #include <stdlib.h>
 #include <vector>
+#include <list>
 
 class Block;
 class BlockIterator;
@@ -57,6 +58,10 @@ class Serpent
 
         bool compress();
 
+        void writeSteps(
+                std::ostream& outputStream
+                ) const;
+
     private:
 
         class BlockIterator
@@ -84,6 +89,23 @@ class Serpent
         class TailBlockCollector;
 
         typedef std::vector<Block*> Blocks;
+
+        struct Step
+        {
+            const size_t    myBlockID;
+            const Rotation  myRotation;
+
+            Step(
+                    size_t      blockID,
+                    Rotation    rot
+                ) :
+                myBlockID(blockID),
+                myRotation(rot)
+            {
+            }
+        };
+
+        typedef std::list<Step> Steps;
 
         static ssize_t GetMax(
                 ssize_t val1,
@@ -129,6 +151,8 @@ class Serpent
         Block* myHead;
 
         Space* mySpace;
+
+        Steps mySteps;
 };
 
 #endif

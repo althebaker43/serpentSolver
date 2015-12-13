@@ -74,6 +74,10 @@ main(
 
     DumpDimensions(dimStream, serpent);
 
+    std::ofstream stepStream("procedure.steps");
+    serpent->writeSteps(stepStream);
+    stepStream.close();
+
     dimStream.close();
 
     delete serpent;

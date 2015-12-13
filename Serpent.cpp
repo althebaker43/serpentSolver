@@ -773,24 +773,24 @@ Serpent::compress()
             {
                 Block* pivot = *pivotIter;
 
-                Block::Rotation cwRot;
-                Block::Rotation ccwRot;
+                Rotation cwRot;
+                Rotation ccwRot;
 
                 switch (rotAxis)
                 {
                     case AXIS_X:
-                        cwRot = Block::ROT_X_CW;
-                        ccwRot = Block::ROT_X_CCW;
+                        cwRot = ROT_X_CW;
+                        ccwRot = ROT_X_CCW;
                         break;
 
                     case AXIS_Y:
-                        cwRot = Block::ROT_Y_CW;
-                        ccwRot = Block::ROT_Y_CCW;
+                        cwRot = ROT_Y_CW;
+                        ccwRot = ROT_Y_CCW;
                         break;
 
                     case AXIS_Z:
-                        cwRot = Block::ROT_Z_CW;
-                        ccwRot = Block::ROT_Z_CCW;
+                        cwRot = ROT_Z_CW;
+                        ccwRot = ROT_Z_CCW;
                         break;
 
                     default:
@@ -800,6 +800,7 @@ Serpent::compress()
                 pivot->rotate(cwRot);
                 if (check() == true)
                 {
+                    mySteps.push_back(Step(pivot->getID(), cwRot));
                     return true;
                 }
                 else
@@ -810,6 +811,7 @@ Serpent::compress()
                 pivot->rotate(ccwRot);
                 if (check() == true)
                 {
+                    mySteps.push_back(Step(pivot->getID(), ccwRot));
                     return true;
                 }
                 else
@@ -885,6 +887,34 @@ Serpent::markTailBlocks()
         Block* block = *blockIter;
 
         block->setTail(true);
+    }
+}
+
+void
+Serpent::writeSteps(
+        std::ostream& outputStream
+        ) const
+{
+    for(
+            Steps::const_iterator stepIter = mySteps.begin();
+            stepIter != mySteps.end();
+            ++stepIter
+       )
+    {
+        outputStream << stepIter->myBlockID << ' ';
+
+        switch (stepIter->myRotation)
+        {
+            case ROT_X_CW:  outputStream << "x_cw";  break;
+            case ROT_X_CCW: outputStream << "x_ccw"; break;
+            case ROT_Y_CW:  outputStream << "y_cw";  break;
+            case ROT_Y_CCW: outputStream << "y_ccw"; break;
+            case ROT_Z_CW:  outputStream << "z_cw";  break;
+            case ROT_Z_CCW: outputStream << "z_ccw"; break;
+            default: break;
+        };
+
+        outputStream << std::endl;
     }
 }
 

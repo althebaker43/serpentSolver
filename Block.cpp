@@ -3,7 +3,10 @@
 #include <stdlib.h>
 
 
-Direction Block::OUR_ROT_DIR_MAP[Block::NUM_ROTS][NUM_DIRS] = {
+size_t Block::ourNextID = 1;
+
+
+Direction Block::OUR_ROT_DIR_MAP[NUM_ROTS][NUM_DIRS] = {
     { DIR_RIGHT,    DIR_LEFT,     DIR_FORWARD, DIR_BACKWARD, DIR_DOWN,     DIR_UP       },
     { DIR_LEFT,     DIR_RIGHT,    DIR_FORWARD, DIR_BACKWARD, DIR_UP,       DIR_DOWN     },
     { DIR_FORWARD,  DIR_BACKWARD, DIR_DOWN,    DIR_UP,       DIR_RIGHT,    DIR_LEFT     },
@@ -15,6 +18,7 @@ Direction Block::OUR_ROT_DIR_MAP[Block::NUM_ROTS][NUM_DIRS] = {
 Block::Block() :
     myNext(NULL),
     myNextDir(DIR_UP),
+    MY_ID(ourNextID++),
     myIsTail(false)
 {
 }
@@ -51,6 +55,12 @@ Block*
 Block::getNext() const
 {
     return myNext;
+}
+
+size_t
+Block::getID() const
+{
+    return MY_ID;
 }
 
 void
