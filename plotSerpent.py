@@ -21,6 +21,10 @@ def WriteSerpentImage(serpent, fileName):
     figure = plt.figure()
     axes = figure.add_subplot(111, projection='3d')
 
+    axes.set_xlim(left=-14, right=14)
+    axes.set_ylim(bottom=-14, top=14)
+    axes.set_zlim(bottom=-14, top=14)
+
     axes.plot(xVals, yVals, zVals)
 
     figure.savefig(fileName)
