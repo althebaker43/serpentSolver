@@ -6,6 +6,9 @@
 #include <algorithm>
 
 
+Serpent::Axis Serpent::OUR_ROT_AXES[3] = {AXIS_X, AXIS_Y, AXIS_Z};
+
+
 Serpent*
 Serpent::CreateFromPath(
         const char* filename
@@ -47,7 +50,8 @@ Serpent::CreateFromPath(
 
 Serpent::Serpent() :
     myHead(new Block()),
-    mySpace(NULL)
+    mySpace(NULL),
+    myCurrentRotAxisIdx(0)
 {
 }
 
@@ -734,6 +738,9 @@ Serpent::compress()
     Axes compressAxes;
     getMaxSizeAxes(compressAxes);
 
+    size_t origRotAxisIdx = myCurrentRotAxisIdx;
+    myCurrentRotAxisIdx = (myCurrentRotAxisIdx < 2) ? myCurrentRotAxisIdx + 1 : 0;
+
     for(
             Axes::const_iterator compressAxisIter = compressAxes.begin();
             compressAxisIter != compressAxes.end();
@@ -741,36 +748,18 @@ Serpent::compress()
        )
     {
         Axis compressAxis = *compressAxisIter;
-        Axes rotAxes(2);
-
-        switch (compressAxis)
-        {
-            case AXIS_X:
-                rotAxes[0] = AXIS_Y;
-                rotAxes[1] = AXIS_Z;
-                break;
-
-            case AXIS_Y:
-                rotAxes[0] = AXIS_X;
-                rotAxes[1] = AXIS_Z;
-                break;
-
-            case AXIS_Z:
-                rotAxes[0] = AXIS_X;
-                rotAxes[1] = AXIS_Y;
-                break;
-
-            default:
-                break;
-        };
 
         for(
-                Axes::const_iterator rotAxisIter = rotAxes.begin();
-                rotAxisIter != rotAxes.end();
-                ++rotAxisIter
+                ;
+                myCurrentRotAxisIdx != origRotAxisIdx;
+                myCurrentRotAxisIdx = (myCurrentRotAxisIdx < 2) ? myCurrentRotAxisIdx + 1 : 0
            )
         {
-            Axis rotAxis = *rotAxisIter;
+            Axis rotAxis = OUR_ROT_AXES[myCurrentRotAxisIdx];
+            if (rotAxis == compressAxis)
+            {
+                continue;
+            }
 
             Blocks pivots;
             getPivots(rotAxis, pivots);

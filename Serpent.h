@@ -164,6 +164,10 @@ class Serpent
         Steps mySteps;
 
         std::ifstream myStepStream;
+
+        static Axis OUR_ROT_AXES [3];
+
+        size_t myCurrentRotAxisIdx;
 };
 
 #endif
