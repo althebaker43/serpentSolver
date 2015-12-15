@@ -562,6 +562,8 @@ class Serpent::PivotBlockCollector : public Serpent::PositionIterator
 
         const float myCenter;
 
+        bool myPreviousIsPivot;
+
         /**
          * Container of pivots and their distances from the center
          */
@@ -620,7 +622,8 @@ class Serpent::PivotBlockCollector : public Serpent::PositionIterator
                 float   center
                 ) :
             myAxis(axis),
-            myCenter(center)
+            myCenter(center),
+            myPreviousIsPivot(false)
         {
         }
 
@@ -636,6 +639,12 @@ class Serpent::PivotBlockCollector : public Serpent::PositionIterator
                 )
         {
             if (isPivot(dir) == false)
+            {
+                myPreviousIsPivot = false;
+                return;
+            }
+
+            if (myPreviousIsPivot == true)
             {
                 return;
             }
@@ -662,6 +671,7 @@ class Serpent::PivotBlockCollector : public Serpent::PositionIterator
                         distance
                         )
                     );
+            myPreviousIsPivot = true;
         }
 
         void getPivots(
