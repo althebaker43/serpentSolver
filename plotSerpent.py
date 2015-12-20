@@ -7,6 +7,13 @@ import Serpent
 
 def WriteSerpentImage(serpent, fileName):
 
+    figure = GetSerpentFigure(serpent)
+    figure.savefig(fileName)
+    plt.close(figure)
+
+
+def GetSerpentFigure(serpent):
+
     coordinates = serpent.getBlocksPos()
 
     xVals = []
@@ -27,16 +34,18 @@ def WriteSerpentImage(serpent, fileName):
 
     axes.plot(xVals, yVals, zVals)
 
-    figure.savefig(fileName)
+    return figure
 
 
-serpent = Serpent.Serpent.CreateFromPath('serpent.path')
-serpent.openStepFile('procedure.steps')
+if (__name__ == '__main__'):
 
-for step in range(20):
-    WriteSerpentImage(serpent, 'step_' + str(step) + '.png')
-    if (serpent.step() == False):
-        break
+    serpent = Serpent.Serpent.CreateFromPath('serpent.path')
+    serpent.openStepFile('procedure.steps')
 
-serpent.closeStepFile()
+    for step in range(65):
+        WriteSerpentImage(serpent, 'img/step_' + str(step) + '.png')
+        if (serpent.step() == False):
+            break
+
+    serpent.closeStepFile()
 
