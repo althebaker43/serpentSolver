@@ -24,11 +24,11 @@ class Block
 
         size_t getID() const;
 
-        void setTail(
-                bool isTail
+        void setEdge(
+                bool isEdge
                 );
 
-        bool isTail() const;
+        bool isEdge() const;
 
         void rotate(
                 Rotation rot
@@ -46,7 +46,7 @@ class Block
 
         const size_t MY_ID;
 
-        bool myIsTail;
+        bool myIsEdge;
 };
 
 #endif

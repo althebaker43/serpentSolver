@@ -95,7 +95,7 @@ class Serpent
         class BoundsCalculator;
         class Checker;
         class PivotBlockCollector;
-        class TailBlockCollector;
+        class EdgeBlockCollector;
 
         typedef std::vector<Block*> Blocks;
 
@@ -155,7 +155,7 @@ class Serpent
                 Blocks& blocks  /**< Pivot points sorted by distance from center */
                 );
 
-        void markTailBlocks();
+        void markEdgeBlocks();
 
         Block* myHead;
 

@@ -19,7 +19,7 @@ Block::Block() :
     myNext(NULL),
     myNextDir(DIR_UP),
     MY_ID(ourNextID++),
-    myIsTail(false)
+    myIsEdge(false)
 {
 }
 
@@ -77,16 +77,16 @@ Block::rotate(
 }
 
 void
-Block::setTail(
-        bool isTail
+Block::setEdge(
+        bool isEdge
         )
 {
-    myIsTail = isTail;
+    myIsEdge = isEdge;
 }
 
 bool
-Block::isTail() const
+Block::isEdge() const
 {
-    return myIsTail;
+    return myIsEdge;
 }
 

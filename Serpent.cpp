@@ -42,7 +42,7 @@ Serpent::CreateFromPath(
 
     pathStream.close();
 
-    serpent->markTailBlocks();
+    serpent->markEdgeBlocks();
 
     return serpent;
 }
@@ -653,7 +653,7 @@ class Serpent::PivotBlockCollector : public Serpent::PositionIterator
                 return;
             }
 
-            if (block->isTail() == true)
+            if (block->isEdge() == true)
             {
                 return;
             }
@@ -824,9 +824,13 @@ Serpent::compress()
     return false;
 }
 
-class Serpent::TailBlockCollector : public Serpent::BlockIterator
+class Serpent::EdgeBlockCollector : public Serpent::BlockIterator
 {
     private:
+
+        Blocks myHeadBlocks;
+
+        bool myAtHead;
 
         Blocks myTailBlocks;
 
@@ -834,7 +838,8 @@ class Serpent::TailBlockCollector : public Serpent::BlockIterator
 
     public:
 
-        TailBlockCollector() :
+        EdgeBlockCollector() :
+            myAtHead(true),
             myPrevDir(DIR_UP)
         {
         }
@@ -843,6 +848,9 @@ class Serpent::TailBlockCollector : public Serpent::BlockIterator
                 Block* head
                 )
         {
+            myHeadBlocks.push_back(head);
+
+            head->getNext(myPrevDir);
         }
 
         void processBlock(
@@ -853,39 +861,56 @@ class Serpent::TailBlockCollector : public Serpent::BlockIterator
             if (dir == myPrevDir)
             {
                 myTailBlocks.push_back(block);
+
+                if (myAtHead == true)
+                {
+                    myHeadBlocks.push_back(block);
+                }
             }
             else
             {
+                myAtHead = false;
                 myTailBlocks.clear();
             }
         }
 
-        void getTailBlocks(
-                Blocks& tailBlocks
+        void getEdgeBlocks(
+                Blocks& edgeBlocks
                 )
         {
-            tailBlocks = myTailBlocks;
+            edgeBlocks.clear();
+
+            edgeBlocks.insert(
+                    edgeBlocks.end(),
+                    myHeadBlocks.begin(),
+                    myHeadBlocks.end()
+                    );
+            edgeBlocks.insert(
+                    edgeBlocks.end(),
+                    myTailBlocks.begin(),
+                    myTailBlocks.end()
+                    );
         }
 };
 
 void
-Serpent::markTailBlocks()
+Serpent::markEdgeBlocks()
 {
-    Blocks tailBlocks;
+    Blocks edgeBlocks;
 
-    TailBlockCollector collector;
+    EdgeBlockCollector collector;
     iterateOverBlocks(&collector);
-    collector.getTailBlocks(tailBlocks);
+    collector.getEdgeBlocks(edgeBlocks);
 
     for(
-            Blocks::const_iterator blockIter = tailBlocks.begin();
-            blockIter != tailBlocks.end();
+            Blocks::const_iterator blockIter = edgeBlocks.begin();
+            blockIter != edgeBlocks.end();
             ++blockIter
        )
     {
         Block* block = *blockIter;
 
-        block->setTail(true);
+        block->setEdge(true);
     }
 }
 
