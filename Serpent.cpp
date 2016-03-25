@@ -302,6 +302,22 @@ Serpent::getDimensions(
     zSize = GetLength(zMax, zMin);
 }
 
+size_t
+Serpent::getVolume()
+{
+    size_t xSize = 0;
+    size_t ySize = 0;
+    size_t zSize = 0;
+
+    getDimensions(
+            xSize,
+            ySize,
+            zSize
+            );
+
+    return (xSize * ySize * zSize);
+}
+
 class Serpent::BoundsCalculator : public Serpent::PositionIterator
 {
     private:
@@ -732,90 +748,129 @@ Serpent::getPivots(
     collector.getPivots(blocks);
 }
 
+static bool
+CheckCompression(
+        bool    isSerpentValid,
+        size_t  origVolume,
+        size_t  newVolume,
+        bool    isVolumeIgnored
+        )
+{
+    if (isSerpentValid == false)
+    {
+        return false;
+    }
+
+    if (isVolumeIgnored == true)
+    {
+        return true;
+    }
+
+    if (newVolume < origVolume)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool
 Serpent::compress()
 {
     Axes compressAxes;
     getMaxSizeAxes(compressAxes);
 
-    size_t origRotAxisIdx = myCurrentRotAxisIdx;
-    myCurrentRotAxisIdx = (myCurrentRotAxisIdx < 2) ? myCurrentRotAxisIdx + 1 : 0;
+    size_t origVolume = getVolume();
 
     for(
-            Axes::const_iterator compressAxisIter = compressAxes.begin();
-            compressAxisIter != compressAxes.end();
-            ++compressAxisIter
+            size_t attemptIdx = 0;
+            attemptIdx < 2;
+            ++attemptIdx
        )
     {
-        Axis compressAxis = *compressAxisIter;
+        bool isVolumeIgnored = (attemptIdx == 1);
+
+        size_t origRotAxisIdx = myCurrentRotAxisIdx;
+        myCurrentRotAxisIdx = (myCurrentRotAxisIdx < 2) ? myCurrentRotAxisIdx + 1 : 0;
 
         for(
-                ;
-                myCurrentRotAxisIdx != origRotAxisIdx;
-                myCurrentRotAxisIdx = (myCurrentRotAxisIdx < 2) ? myCurrentRotAxisIdx + 1 : 0
+                Axes::const_iterator compressAxisIter = compressAxes.begin();
+                compressAxisIter != compressAxes.end();
+                ++compressAxisIter
            )
         {
-            Axis rotAxis = OUR_ROT_AXES[myCurrentRotAxisIdx];
-            if (rotAxis == compressAxis)
-            {
-                continue;
-            }
-
-            Blocks pivots;
-            getPivots(rotAxis, pivots);
+            Axis compressAxis = *compressAxisIter;
 
             for(
-                    Blocks::const_iterator pivotIter = pivots.begin();
-                    pivotIter != pivots.end();
-                    ++pivotIter
+                    ;
+                    myCurrentRotAxisIdx != origRotAxisIdx;
+                    myCurrentRotAxisIdx = (myCurrentRotAxisIdx < 2) ? myCurrentRotAxisIdx + 1 : 0
                )
             {
-                Block* pivot = *pivotIter;
-
-                Rotation cwRot;
-                Rotation ccwRot;
-
-                switch (rotAxis)
+                Axis rotAxis = OUR_ROT_AXES[myCurrentRotAxisIdx];
+                if (rotAxis == compressAxis)
                 {
-                    case AXIS_X:
-                        cwRot = ROT_X_CW;
-                        ccwRot = ROT_X_CCW;
-                        break;
-
-                    case AXIS_Y:
-                        cwRot = ROT_Y_CW;
-                        ccwRot = ROT_Y_CCW;
-                        break;
-
-                    case AXIS_Z:
-                        cwRot = ROT_Z_CW;
-                        ccwRot = ROT_Z_CCW;
-                        break;
-
-                    default:
-                        break;
-                };
-
-                pivot->rotate(cwRot);
-                if (check() == true)
-                {
-                    mySteps.push_back(Step(pivot->getID(), cwRot));
-                    return true;
-                }
-                else
-                {
-                    pivot->rotate(ccwRot);
+                    continue;
                 }
 
-                pivot->rotate(ccwRot);
-                if (check() == true)
+                Blocks pivots;
+                getPivots(rotAxis, pivots);
+
+                for(
+                        Blocks::const_iterator pivotIter = pivots.begin();
+                        pivotIter != pivots.end();
+                        ++pivotIter
+                   )
                 {
-                    mySteps.push_back(Step(pivot->getID(), ccwRot));
-                    return true;
-                }
-                else
-                {
+                    Block* pivot = *pivotIter;
+
+                    Rotation cwRot;
+                    Rotation ccwRot;
+
+                    switch (rotAxis)
+                    {
+                        case AXIS_X:
+                            cwRot = ROT_X_CW;
+                            ccwRot = ROT_X_CCW;
+                            break;
+
+                        case AXIS_Y:
+                            cwRot = ROT_Y_CW;
+                            ccwRot = ROT_Y_CCW;
+                            break;
+
+                        case AXIS_Z:
+                            cwRot = ROT_Z_CW;
+                            ccwRot = ROT_Z_CCW;
+                            break;
+
+                        default:
+                            break;
+                    };
+
                     pivot->rotate(cwRot);
+                    if (CheckCompression(check(), origVolume, getVolume(), isVolumeIgnored))
+                    {
+                        mySteps.push_back(Step(pivot->getID(), cwRot));
+                        return true;
+                    }
+                    else
+                    {
+                        pivot->rotate(ccwRot);
+                    }
+
+                    pivot->rotate(ccwRot);
+                    if (CheckCompression(check(), origVolume, getVolume(), isVolumeIgnored))
+                    {
+                        mySteps.push_back(Step(pivot->getID(), ccwRot));
+                        return true;
+                    }
+                    else
+                    {
+                        pivot->rotate(cwRot);
+                    }
                 }
             }
         }

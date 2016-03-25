@@ -55,6 +55,8 @@ class Serpent
                 size_t& zSize
                 );
 
+        size_t getVolume();
+
         bool check();
 
         bool compress();
