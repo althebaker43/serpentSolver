@@ -101,9 +101,9 @@ class Serpent::PositionIterator : public Serpent::BlockIterator
     public:
 
         PositionIterator() :
-            myXPos(1),
-            myYPos(1),
-            myZPos(1)
+            myXPos(0),
+            myYPos(0),
+            myZPos(0)
         {
         }
 
@@ -420,16 +420,7 @@ Serpent::GetLength(
         ssize_t loBound
         )
 {
-    size_t length = hiBound - loBound;
-
-    if (length > 0)
-    {
-        return length;
-    }
-    else
-    {
-        return 1;
-    }
+    return (hiBound - loBound + 1);
 }
 
 class Serpent::Checker : public Serpent::PositionIterator

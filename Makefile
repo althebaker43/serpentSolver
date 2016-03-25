@@ -27,7 +27,7 @@ RESIDUE = \
 	Serpent.pyc
 
 
-$(PROG) : $(OBJS)
+$(PROG) : $(OBJS) Main.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $(OBJS) Main.cpp $(LDFLAGS)
 
 .PHONY : python
