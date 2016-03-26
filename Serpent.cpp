@@ -783,9 +783,6 @@ Serpent::compress()
     {
         bool isVolumeIgnored = (attemptIdx == 1);
 
-        size_t origRotAxisIdx = myCurrentRotAxisIdx;
-        myCurrentRotAxisIdx = (myCurrentRotAxisIdx < 2) ? myCurrentRotAxisIdx + 1 : 0;
-
         for(
                 Axes::const_iterator compressAxisIter = compressAxes.begin();
                 compressAxisIter != compressAxes.end();
@@ -794,12 +791,17 @@ Serpent::compress()
         {
             Axis compressAxis = *compressAxisIter;
 
+            myCurrentRotAxisIdx = (myCurrentRotAxisIdx < 2) ? myCurrentRotAxisIdx + 1 : 0;
+            bool rotAxisTried [3] = {false, false, false};
+
             for(
                     ;
-                    myCurrentRotAxisIdx != origRotAxisIdx;
+                    rotAxisTried[myCurrentRotAxisIdx] == false;
                     myCurrentRotAxisIdx = (myCurrentRotAxisIdx < 2) ? myCurrentRotAxisIdx + 1 : 0
                )
             {
+                rotAxisTried[myCurrentRotAxisIdx] = true;
+
                 Axis rotAxis = OUR_ROT_AXES[myCurrentRotAxisIdx];
                 if (rotAxis == compressAxis)
                 {
